@@ -1,1 +1,1 @@
-from app import app, errors
+from app import app

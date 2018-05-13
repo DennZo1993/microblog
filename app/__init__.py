@@ -13,6 +13,15 @@ from config import Config
 app = Flask(__name__)
 bootstrap = Bootstrap(app)
 
+from app.errors import errors_bp
+app.register_blueprint(errors_bp)
+
+from app.auth import auth_bp
+app.register_blueprint(auth_bp)
+
+from app.main import main_bp
+app.register_blueprint(main_bp)
+
 app.config.from_object(Config)
 
 if not app.debug:
@@ -33,7 +42,3 @@ if not app.debug:
     app.logger.addHandler(log_handler)
     app.logger.setLevel(logging.INFO)
     app.logger.info('Microblog startup')
-
-
-
-from app import routes
