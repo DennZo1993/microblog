@@ -1,11 +1,7 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block title %}
-  {% if title %}
-  <title>{{ title }} - Microblog</title>
-  {% else %}
-  <title>Welcome to Microblog!</title>
-  {% endif %}
+    {% if title %}{{ title }} - Microblog{% else %}Welcome to Microblog{% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -20,7 +16,7 @@
           <a href="/index">Home</a>
         </li>
         <li>
-          <a href="/reg">Register</a>
+          <a href="/login">Login</a>
         </li>
       </ul>
     </div>
