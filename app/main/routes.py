@@ -7,9 +7,13 @@ from app.main import main_bp
 def index():
     user = {'username': 'Denis'}
     posts = [
-      {
-        'author': user,
-        'body': 'My first post',
-      },
+        {
+            'author': user,
+            'body': 'My first post',
+        },
+        {
+            'author': {'username': 'Alexander'},
+            'body': 'Another awesome post',
+        },
     ]
     return render_template('index.html', title='Home', user=user, posts=posts)
