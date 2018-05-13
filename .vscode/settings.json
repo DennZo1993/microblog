@@ -1,0 +1,9 @@
+{
+    "python.pythonPath": "${workspaceFolder}/blog-venv/bin/python",
+
+    "editor.detectIndentation": true,
+
+    "editor.rulers": [
+        120,
+    ]
+}
