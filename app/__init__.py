@@ -8,11 +8,13 @@ from flask.logging import default_handler
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 from config import Config
 
 
 bootstrap = Bootstrap()
+login = LoginManager()
 db = SQLAlchemy()
 migrate = Migrate()
 
@@ -34,6 +36,8 @@ def create_app(config_obj=Config):
     bootstrap.init_app(app)
     db.init_app(app)
     migrate.init_app(app, db)
+    login.init_app(app)
+    login.login_view = 'auth.login'
 
     # Init logging
     if not app.debug:

@@ -1,7 +1,7 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block title %}
-    {% if title %}{{ title }} - Microblog{% else %}Welcome to Microblog{% endif %}
+  {% if title %}{{ title }} - Microblog{% else %}Welcome to Microblog{% endif %}
 {% endblock %}
 
 {% block navbar %}
@@ -16,7 +16,11 @@
           <a href="{{ url_for('main.index') }}">Home</a>
         </li>
         <li>
+          {% if current_user.is_anonymous %}
           <a href="{{ url_for('auth.login') }}">Login</a>
+          {% else %}
+          <a href="{{ url_for('auth.logout') }}">Logout</a>
+          {% endif %}
         </li>
       </ul>
     </div>
@@ -27,16 +31,16 @@
   <div class="container">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-        {% for category, message in messages %}
-        {% set alert_category = category %}
-        {% if category == "message" %}
-            {% set alert_category = "info" %}
-        {% endif %}
-        <div class="alert alert-{{ alert_category }}" role="alert" alert-dismissible>
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            {{ message }}
-        </div>
-        {% endfor %}
+      {% for category, message in messages %}
+      {% set alert_category = category %}
+      {% if category == "message" %}
+        {% set alert_category = "info" %}
+      {% endif %}
+      <div class="alert alert-{{ alert_category }}" role="alert" alert-dismissible>
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        {{ message }}
+      </div>
+      {% endfor %}
     {% endif %}
     {% endwith %}
 
