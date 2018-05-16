@@ -25,6 +25,21 @@
 
 {% block content %}
   <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        {% set alert_category = category %}
+        {% if category == "message" %}
+            {% set alert_category = "info" %}
+        {% endif %}
+        <div class="alert alert-{{ alert_category }}" role="alert" alert-dismissible>
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
     {% block app_content %}{% endblock %}
   </div>
 {% endblock %}
