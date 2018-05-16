@@ -4,31 +4,67 @@ from flask import request
 from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 
+from app import db
 from app.auth import auth_bp
-from app.auth.forms import LoginForm
+from app.auth.forms import LoginForm, RegistrationForm
 from app.models import User
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
+    return render_template(
+        'auth/login.html', title='Login',
+        login_form=LoginForm(), register_form=RegistrationForm())
 
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if not user or not user.check_password(form.password.data):
+
+@auth_bp.route('/login_user', methods=['GET', 'POST'])
+def do_login():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    login_form = LoginForm()
+    if login_form.validate_on_submit():
+        user = User.query.filter_by(username=login_form.username.data).first()
+        if not user or not user.check_password(login_form.password.data):
             flash('Invalid username or password', category='danger')
             return redirect(url_for('auth.login'))
 
-        login_user(user, remember=form.remember_me.data)
+        login_user(user, remember=login_form.remember_me.data)
         # Redirect to the next page if it's given and valid, '/index' otherwise
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
         return redirect(next_page)
 
-    return render_template('auth/login.html', title='Login', form=form)
+    return render_template(
+        'auth/login.html', title='Login',
+        login_form=login_form, register_form=RegistrationForm())
+
+
+@auth_bp.route('/register_user', methods=['GET', 'POST'])
+def do_register():
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    register_form = RegistrationForm()
+    if register_form.validate_on_submit():
+        # Create new user
+        user = User(username=register_form.username.data, email=register_form.email.data)
+        user.set_password(register_form.password.data)
+        # Save to database
+        db.session.add(user)
+        db.session.commit()
+
+        login_user(user, remember=False)
+        flash('You are now a registered user!', category='success')
+        return redirect(url_for('main.index'))
+
+    return render_template(
+        'auth/login.html', title='Login',
+        login_form=LoginForm(), register_form=register_form)
 
 
 @auth_bp.route('/logout')

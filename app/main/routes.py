@@ -1,5 +1,5 @@
 from flask import render_template
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 from app.main import main_bp
 
@@ -8,15 +8,5 @@ from app.main import main_bp
 @main_bp.route('/index')
 @login_required
 def index():
-    user = {'username': 'Denis'}
-    posts = [
-        {
-            'author': user,
-            'body': 'My first post',
-        },
-        {
-            'author': {'username': 'Alexander'},
-            'body': 'Another awesome post',
-        },
-    ]
+    posts = current_user.posts
     return render_template('index.html', title='Home', posts=posts)
