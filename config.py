@@ -10,6 +10,7 @@ class Config(object):
 
     # Security
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'my-secret-key'
+    TOKEN_EXPIRATION_HOURS = int(os.environ.get('TOKEN_EXPIRATION_HOURS') or '24')
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \

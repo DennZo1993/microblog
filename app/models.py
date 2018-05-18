@@ -1,5 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import jwt
 
+from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -27,6 +29,28 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def generate_security_token(self, purpose):
+        exp_delta = timedelta(hours=current_app.config['TOKEN_EXPIRATION_HOURS'])
+        payload = {
+            'user_id': self.id,
+            'purpose': purpose,
+            'exp': datetime.utcnow() + exp_delta,
+        }
+        token = jwt.encode(payload, current_app.config['SECRET_KEY'], 'HS256')
+        return token.decode('utf-8')
+
+    @staticmethod
+    def validate_security_token(token, purpose):
+        try:
+            payload = jwt.decode(token, current_app.config['SECRET_KEY'], 'HS256')
+            if payload['purpose'] != purpose:
+                return None
+            user_id = payload['user_id']
+        except:
+            return None
+        return User.query.get(user_id)
+
 
 @login.user_loader
 def load_user(id):
