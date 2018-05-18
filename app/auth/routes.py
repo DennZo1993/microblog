@@ -52,7 +52,8 @@ def do_register():
     register_form = RegistrationForm()
     if register_form.validate_on_submit():
         # Create new user
-        user = User(username=register_form.username.data, email=register_form.email.data)
+        user = User(username=register_form.username.data)
+        user.set_email(register_form.email.data)
         user.set_password(register_form.password.data)
         # Save to database
         db.session.add(user)

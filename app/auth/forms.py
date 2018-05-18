@@ -16,12 +16,10 @@ class LoginForm(FlaskForm):
 
 
 class RegistrationForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired()])
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=30)])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    password = PasswordField(
-        'Password', validators=[DataRequired(), Length(min=8)])
-    repeat_password = PasswordField(
-        'Repeat password', validators=[DataRequired(), EqualTo('password')])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=8, max=30)])
+    repeat_password = PasswordField('Repeat password', validators=[DataRequired(), EqualTo('password')])
     register = SubmitField('Register')
 
     def validate_username(self, username):
@@ -29,5 +27,5 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('This username is already in use')
 
     def validate_email(self, email):
-        if User.query.filter_by(email=email.data).first() is not None:
+        if User.query.filter_by(email=email.data.lower()).first() is not None:
             raise ValidationError('This email address is already in use')
