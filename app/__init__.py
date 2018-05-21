@@ -6,11 +6,15 @@ import os
 from flask import Flask
 from flask.logging import default_handler
 from flask_bootstrap import Bootstrap
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 from config import Config
 
 
 bootstrap = Bootstrap()
+db = SQLAlchemy()
+migrate = Migrate()
 
 def create_app(config_obj=Config):
     app = Flask(__name__)
@@ -28,6 +32,8 @@ def create_app(config_obj=Config):
 
     # Init application
     bootstrap.init_app(app)
+    db.init_app(app)
+    migrate.init_app(app, db)
 
     # Init logging
     if not app.debug:
@@ -50,3 +56,5 @@ def create_app(config_obj=Config):
         app.logger.info('Microblog startup')
 
     return app
+
+from app import models
