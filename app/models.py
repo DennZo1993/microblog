@@ -15,11 +15,28 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
 
     registered_on = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    activated_on = db.Column(db.DateTime, nullable=True)
 
     posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __repr__(self):
         return '<User {0} ({1})>'.format(self.username, self.email)
+
+    ''' Flask-Login requirements
+    '''
+
+    @property
+    def is_active(self):
+        return self.activated_on is not None
+
+    ''' Common functions
+    '''
+
+    def activate(self, activation_time=None):
+        self.activated_on = activation_time if activation_time else datetime.utcnow()
+
+    def deactivate(self):
+        self.activated_on = None
 
     def set_email(self, email_addr):
         self.email = email_addr.lower()

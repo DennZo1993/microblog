@@ -30,7 +30,10 @@ def do_login():
         user = User.query.filter_by(username=login_form.username.data).first()
         if not user or not user.check_password(login_form.password.data):
             flash('Invalid username or password', category='danger')
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('.login'))
+        if not user.is_active:
+            flash('Your account is not active yet. Please check your mailbox for activation link', category='warning')
+            return redirect(url_for('.login'))
 
         login_user(user, remember=login_form.remember_me.data)
         # Redirect to the next page if it's given and valid, '/index' otherwise
