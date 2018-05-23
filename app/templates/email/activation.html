@@ -1,0 +1,11 @@
+<p>Hi, {{ user.username }}!</p>
+<p>Thank you for registering at Microblog!</p>
+<p>
+    To activate your account, please click on this
+    <a href="{{ url_for('auth.activate_user', token=token, _external=True) }}">link</a>.
+</p>
+<p>If you didn't register, please ignore this message.</p>
+<p>
+    Yours,
+    Microblog team
+</p>

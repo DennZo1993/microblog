@@ -30,3 +30,11 @@ class UserDAO:
         db.session.commit()
 
         return user
+
+    @staticmethod
+    def activate(token):
+        user = User.validate_security_token(token=token, purpose='activation')
+        if user:
+            user.activate()
+            db.session.commit()
+        return user

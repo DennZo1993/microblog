@@ -8,6 +8,7 @@ from app import db
 from app.data_access import UserDAO
 from app.auth import auth_bp
 from app.auth.forms import LoginForm, RegistrationForm
+from app.auth.email import send_user_activation_email
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -58,7 +59,8 @@ def do_register():
                               password=register_form.password.data,
                               email=register_form.email.data)
 
-        flash('You are now a registered user!', category='success')
+        send_user_activation_email(user)
+        flash('You are now a registered user! Please check your mailbox for activation link', category='success')
         return redirect(url_for('.login'))
 
     return render_template(
@@ -70,3 +72,14 @@ def do_register():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
+@auth_bp.route('/activate_user/<token>', methods=['GET', 'POST'])
+def activate_user(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    user = UserDAO.activate(token)
+    if not user:
+        flash('Activation token in invalid or expired', category='danger')
+    return redirect(url_for('.login'))

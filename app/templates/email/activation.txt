@@ -1,0 +1,11 @@
+Hi, {{ user.username }}!
+
+Thank you for registering at Microblog!
+
+To activate your account, please click on link below:
+{{ url_for('auth.activate_user', token=token, _external=True) }}
+
+If you didn't register, please ignore this message.
+
+Yours,
+Microblog team
