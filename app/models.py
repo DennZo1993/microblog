@@ -45,7 +45,7 @@ class User(UserMixin, db.Model):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return (password is not None) and (check_password_hash(self.password_hash, password))
 
     def generate_security_token(self, purpose):
         exp_delta = timedelta(hours=current_app.config['TOKEN_EXPIRATION_HOURS'])
@@ -67,11 +67,6 @@ class User(UserMixin, db.Model):
         except:
             return None
         return User.query.get(user_id)
-
-
-@login.user_loader
-def load_user(id):
-    return User.query.get(int(id))
 
 
 class Post(db.Model):

@@ -1,5 +1,6 @@
 from app import create_app, db
 from app.models import User, Post
+from app.data_access import UserDAO
 
 microblog_app = create_app()
 
@@ -9,4 +10,5 @@ def make_shell_context():
         'db': db,
         'User': User,
         'Post': Post,
+        'UserDAO': UserDAO,
     }

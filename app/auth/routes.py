@@ -5,9 +5,9 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 
 from app import db
+from app.data_access import UserDAO
 from app.auth import auth_bp
 from app.auth.forms import LoginForm, RegistrationForm
-from app.models import User
 
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -27,8 +27,8 @@ def do_login():
 
     login_form = LoginForm()
     if login_form.validate_on_submit():
-        user = User.query.filter_by(username=login_form.username.data).first()
-        if not user or not user.check_password(login_form.password.data):
+        user = UserDAO.get_by_credentials(username=login_form.username.data, password=login_form.password.data)
+        if not user:
             flash('Invalid username or password', category='danger')
             return redirect(url_for('.login'))
         if not user.is_active:
@@ -54,17 +54,12 @@ def do_register():
 
     register_form = RegistrationForm()
     if register_form.validate_on_submit():
-        # Create new user
-        user = User(username=register_form.username.data)
-        user.set_email(register_form.email.data)
-        user.set_password(register_form.password.data)
-        # Save to database
-        db.session.add(user)
-        db.session.commit()
+        user = UserDAO.create(username=register_form.username.data,
+                              password=register_form.password.data,
+                              email=register_form.email.data)
 
-        login_user(user, remember=False)
         flash('You are now a registered user!', category='success')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('.login'))
 
     return render_template(
         'auth/login.html', title='Login',
